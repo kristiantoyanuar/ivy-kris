@@ -1,0 +1,32 @@
+<ivysettings>
+    <settings defaultResolver="${ivy.default.resolver}" circularDependencyStrategy="ignore"/>
+    <property name="ivy.build.default.root" value="http://10.129.50.40:8082/nexus/content" override="false"/>
+    <property name="ivy.build.default.public" value="${ivy.build.default.root}/repositories/public" override="false"/>
+    <property name="ivy.build.default.releases_ji" value="${ivy.build.default.root}/repositories/releases_ji" override="false"/>
+    <property name="ivy.build.default.releases" value="${ivy.build.default.root}/repositories/snapshots" override="false"/>
+    <property name="ivy.build.default.pattern" value="[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]" override="false"/>
+    <property name="additional.classpath" value="${java.io.tmpdir}" override="false" />
+
+    <resolvers>
+        <!-- this resolver is used for local resolution (e.g. kitchen: service dependencies) -->
+        <filesystem name="mincom-current" force="true" checkmodified="true" descriptor="required" checksums="">
+            <ivy pattern="${additional.classpath}/ivy/ivy-[organisation]#[module]#[revision].[ext]" />
+            <artifact pattern="${additional.classpath}/[artifact].[ext]"/>
+        </filesystem>
+        <ibiblio name="mincom-public" m2compatible="true" root="${ivy.build.default.public}" checksums=""/>
+        <url name="mincom-ivy" m2compatible="true" checksums=""> 
+            <ivy pattern="${ivy.build.default.releases}/${ivy.build.default.pattern}" />
+            <artifact pattern="${ivy.build.default.releases}/${ivy.build.default.pattern}" />
+        </url>
+        <url name="releases_ji" m2compatible="true" checksums=""> 
+            <ivy pattern="${ivy.build.default.releases_ji}/${ivy.build.default.pattern}" />
+            <artifact pattern="${ivy.build.default.releases_ji}/${ivy.build.default.pattern}" />
+        </url>
+        <chain name="all" returnFirst="true" dual="true">
+            <resolver ref="mincom-current" />
+            <resolver ref="releases_ji" />
+            <resolver ref="mincom-ivy" />
+            <resolver ref="mincom-public" />
+        </chain>       
+    </resolvers>
+</ivysettings>

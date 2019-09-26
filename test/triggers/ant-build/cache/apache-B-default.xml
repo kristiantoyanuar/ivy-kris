@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="apache"
+		module="B"
+		revision="working@IDKUT-W-C091RK9"
+
+		conf="default"
+		confs="default"
+		date="20190926182927"/>
+	<dependencies>
+		<module organisation="apache" name="foo">
+			<revision name="1.0" status="release" pubdate="20190926182929" resolver="local" artresolver="local" downloaded="false" searched="true" default="true" conf="default, *" position="1">
+				<metadata-artifact status="no" details="" size="0" time="0" location="C:\git-clones\ant-ivy\test\triggers\ant-build\cache\apache\foo\ivy-1.0.xml" searched="true"/>
+				<caller organisation="apache" name="B" conf="default" rev="1.0" rev-constraint-default="1.0" rev-constraint-dynamic="1.0" callerrev="working@IDKUT-W-C091RK9"/>
+				<artifacts>
+					<artifact name="foo" type="jar" ext="jar" status="successful" details="" size="1" time="10" location="C:\git-clones\ant-ivy\test\triggers\ant-build\cache\apache\foo\jars\foo-1.0.jar">
+						<origin-location is-local="true" location="C:\git-clones\ant-ivy\test\triggers\ant-build\local\foo\foo.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+		<module organisation="apache" name="A">
+			<revision name="201909269182927" status="integration" pubdate="20190926182929" resolver="local" artresolver="local" downloaded="true" searched="true" default="false" conf="default, *" position="0">
+				<metadata-artifact status="successful" details="" size="1011" time="14" searched="true" original-local-location="C:\git-clones\ant-ivy\test\triggers\ant-build\cache\apache\A\ivy-working@local.xml.original" origin-is-local="true" origin-location="C:\git-clones\ant-ivy\test\triggers\ant-build\local\A\ivy.xml"/>
+				<caller organisation="apache" name="B" conf="default" rev="latest.integration" rev-constraint-default="latest.integration" rev-constraint-dynamic="latest.integration" callerrev="working@IDKUT-W-C091RK9"/>
+				<artifacts>
+					<artifact name="A" type="jar" ext="jar" status="successful" details="" size="15" time="15" location="C:\git-clones\ant-ivy\test\triggers\ant-build\cache\apache\A\jars\A-201909269182927.jar">
+						<origin-location is-local="true" location="C:\git-clones\ant-ivy\test\triggers\ant-build\local\A\A.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+	</dependencies>
+</ivy-report>

@@ -1,0 +1,24 @@
+<ivy-module version="2.0">
+	<info organisation="ventyx" module="ServiceEar" />
+	<configurations>
+		<conf name="default" />
+		<conf name="doco" />
+		<conf name="batch" />
+		<conf name="webservices" />
+		<conf name="servicetest-trace" />
+		<conf name="html" />
+	</configurations>
+	<publications>
+		<artifact />
+	</publications>
+	<dependencies>
+		<dependency org="ventyx" name="module-0000" rev="${baseline.version}" conf="default" />
+		
+		<dependency org="mincom" name="ellipse-config" rev="${infrastructure.version}" conf="default" />
+		<dependency org="mincom" name="DataExplorerInfrastructure" rev="${infrastructure.ellipse.version}" conf="default" />
+		<dependency org="mincom" name="RIAInfrastructureLinkOne" rev="${infrastructure.ellipse.version}" conf="default" />
+		<dependency org="mincom" name="RIAInfrastructureEllipse" rev="${infrastructure.ellipse.version}" conf="default" />
+		<dependency org="mincom" name="gather-infrastructure" rev="${infrastructure.ellipse.version}" conf="default" />
+	</dependencies>
+</ivy-module>
+

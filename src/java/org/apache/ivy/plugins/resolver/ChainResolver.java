@@ -18,6 +18,7 @@
 package org.apache.ivy.plugins.resolver;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.ivy.core.cache.ArtifactOrigin;
@@ -38,6 +40,7 @@ import org.apache.ivy.core.report.DownloadStatus;
 import org.apache.ivy.core.resolve.DownloadOptions;
 import org.apache.ivy.core.resolve.ResolveData;
 import org.apache.ivy.core.resolve.ResolvedModuleRevision;
+import org.apache.ivy.core.settings.IvySettings;
 import org.apache.ivy.plugins.latest.ArtifactInfo;
 import org.apache.ivy.plugins.latest.LatestStrategy;
 import org.apache.ivy.plugins.resolver.util.HasLatestStrategy;
@@ -71,12 +74,36 @@ public class ChainResolver extends AbstractResolver {
 
     private boolean dual;
 
+    private Properties resolverDependencies = new Properties();
+
     public void add(DependencyResolver resolver) {
         chain.add(resolver);
     }
 
+    private void loadResolveResultJson() {
+        if (getSettings() instanceof IvySettings) {
+            IvySettings settings = (IvySettings) getSettings();
+            if (settings != null && settings.getDefaultCache() != null) {
+                for (File child : settings.getDefaultCache().listFiles()) {
+                    if (child.getName().endsWith("-result.properties")) {
+                        try {
+                            resolverDependencies.load(new FileInputStream(child));
+                        } catch (Exception e) {
+                            Message.verbose("Cannot load result.properties from file "
+                                    + child.getAbsolutePath());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public ResolvedModuleRevision getDependency(DependencyDescriptor dd, ResolveData data)
             throws ParseException {
+        if (resolverDependencies.isEmpty()) {
+            loadResolveResultJson();
+        }
+
         data = new ResolveData(data, doValidate(data));
 
         List<Exception> errors = new ArrayList<>();
@@ -93,25 +120,50 @@ public class ChainResolver extends AbstractResolver {
             }
         }
 
-        for (DependencyResolver resolver : chain) {
-            LatestStrategy oldLatest = setLatestIfRequired(resolver, getLatestStrategy());
-            try {
-                ResolvedModuleRevision previouslyResolved = mr;
-                data.setCurrentResolvedModuleRevision(previouslyResolved);
-                mr = resolver.getDependency(dd, data);
-                if (mr != previouslyResolved && isReturnFirst()) {
-                    mr = forcedRevision(mr);
-                }
-            } catch (Exception ex) {
-                Message.verbose("problem occurred while resolving " + dd + " with " + resolver, ex);
-                errors.add(ex);
-            } finally {
-                if (oldLatest != null) {
-                    setLatest(resolver, oldLatest);
+        if (mr == null) {
+            // if not found in cache try resolve result
+            String key = dd.getDependencyId().getOrganisation() + "#"
+                    + dd.getDependencyId().getName();
+            if (resolverDependencies.containsKey(key)) {
+                for (DependencyResolver resolver : chain) {
+                    if (resolverDependencies.get(key).equals(resolver.getName())) {
+                        try {
+                            ResolvedModuleRevision previouslyResolved = mr;
+                            data.setCurrentResolvedModuleRevision(previouslyResolved);
+                            mr = resolver.getDependency(dd, data);
+                        } catch (Exception ex) {
+                            Message.verbose(
+                                "problem occurred while resolving " + dd + " with " + resolver, ex);
+                            errors.add(ex);
+                        }
+                    }
                 }
             }
-            checkInterrupted();
         }
+
+        if (mr == null) {
+            for (DependencyResolver resolver : chain) {
+                LatestStrategy oldLatest = setLatestIfRequired(resolver, getLatestStrategy());
+                try {
+                    ResolvedModuleRevision previouslyResolved = mr;
+                    data.setCurrentResolvedModuleRevision(previouslyResolved);
+                    mr = resolver.getDependency(dd, data);
+                    if (mr != previouslyResolved && isReturnFirst()) {
+                        mr = forcedRevision(mr);
+                    }
+                } catch (Exception ex) {
+                    Message.verbose("problem occurred while resolving " + dd + " with " + resolver,
+                        ex);
+                    errors.add(ex);
+                } finally {
+                    if (oldLatest != null) {
+                        setLatest(resolver, oldLatest);
+                    }
+                }
+                checkInterrupted();
+            }
+        }
+
         if (mr == null && !errors.isEmpty()) {
             if (errors.size() == 1) {
                 Exception ex = errors.get(0);
@@ -128,8 +180,8 @@ public class ChainResolver extends AbstractResolver {
                     err.append("\t").append(StringUtils.getErrorMessage(ex)).append("\n");
                 }
                 err.setLength(err.length() - 1);
-                throw new RuntimeException("several problems occurred while resolving " + dd
-                        + ":\n" + err);
+                throw new RuntimeException(
+                        "several problems occurred while resolving " + dd + ":\n" + err);
             }
         }
         if (resolved == mr) {
@@ -183,8 +235,7 @@ public class ChainResolver extends AbstractResolver {
     public Map<String, String>[] listTokenValues(String[] tokens, Map<String, Object> criteria) {
         Set<Map<String, String>> result = new HashSet<>();
         for (DependencyResolver resolver : chain) {
-            Map<String, String>[] temp = resolver.listTokenValues(tokens,
-                    new HashMap<>(criteria));
+            Map<String, String>[] temp = resolver.listTokenValues(tokens, new HashMap<>(criteria));
             result.addAll(Arrays.asList(temp));
         }
 

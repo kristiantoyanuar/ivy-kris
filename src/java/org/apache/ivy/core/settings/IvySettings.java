@@ -17,6 +17,27 @@
  */
 package org.apache.ivy.core.settings;
 
+import static org.apache.ivy.util.StringUtils.splitToArray;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.security.AccessControlException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.ivy.Ivy;
 import org.apache.ivy.core.IvyPatternHelper;
 import org.apache.ivy.core.NormalRelativeUrlResolver;
@@ -93,27 +114,6 @@ import org.apache.ivy.util.Message;
 import org.apache.ivy.util.StringUtils;
 import org.apache.ivy.util.filter.Filter;
 import org.apache.ivy.util.url.URLHandlerRegistry;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.security.AccessControlException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import static org.apache.ivy.util.StringUtils.splitToArray;
 
 public class IvySettings implements SortEngineSettings, PublishEngineSettings, ParserSettings,
         DeliverEngineSettings, CheckEngineSettings, InstallEngineSettings, ResolverSettings,
@@ -230,8 +230,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
         if (ivyTypeDefs != null) {
             for (String file : splitToArray(ivyTypeDefs)) {
                 try {
-                    typeDefs(new FileInputStream(Checks.checkAbsolute(file,
-                            "ivy.typedef.files")), true);
+                    typeDefs(new FileInputStream(Checks.checkAbsolute(file, "ivy.typedef.files")),
+                        true);
                 } catch (FileNotFoundException e) {
                     Message.warn("typedefs file not found: " + file);
                 } catch (IOException e) {
@@ -259,12 +259,12 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
         addLockStrategy("artifact-lock", new CreateFileLockStrategy(debugLocking()));
         addLockStrategy("artifact-lock-nio", new NIOFileLockStrategy(debugLocking()));
 
-        addConflictManager("latest-revision", new LatestConflictManager("latest-revision",
-                latestRevisionStrategy));
-        addConflictManager("latest-compatible", new LatestCompatibleConflictManager(
-                "latest-compatible", latestRevisionStrategy));
-        addConflictManager("latest-time", new LatestConflictManager("latest-time",
-                latestTimeStrategy));
+        addConflictManager("latest-revision",
+            new LatestConflictManager("latest-revision", latestRevisionStrategy));
+        addConflictManager("latest-compatible",
+            new LatestCompatibleConflictManager("latest-compatible", latestRevisionStrategy));
+        addConflictManager("latest-time",
+            new LatestConflictManager("latest-time", latestTimeStrategy));
         addConflictManager("all", new NoConflictManager());
         addConflictManager("strict", new StrictConflictManager());
 
@@ -283,7 +283,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
         } catch (Exception e) {
             // ignore: the matcher isn't on the classpath
             Message.info("impossible to define glob matcher: "
-                    + "org.apache.ivy.plugins.matcher.GlobPatternMatcher was not found", e);
+                    + "org.apache.ivy.plugins.matcher.GlobPatternMatcher was not found",
+                e);
         }
 
         addReportOutputter(new LogReportOutputter());
@@ -305,8 +306,9 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
         try {
             addAllVariables((Map<?, ?>) System.getProperties().clone());
         } catch (AccessControlException ex) {
-            Message.verbose("access denied to getting all system properties: they won't be available as Ivy variables."
-                    + "\nset " + ex.getPermission() + " permission if you want to access them");
+            Message.verbose(
+                "access denied to getting all system properties: they won't be available as Ivy variables."
+                        + "\nset " + ex.getPermission() + " permission if you want to access them");
         }
     }
 
@@ -314,7 +316,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
      * Call this method to ask ivy to configure some variables using either a remote or a local
      * properties file
      *
-     * @param remote boolean
+     * @param remote
+     *            boolean
      */
     @SuppressWarnings("deprecation")
     public synchronized void configureRepositories(boolean remote) {
@@ -423,7 +426,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
      * settings file or URL, but prefer to set them manually. By calling this method you will still
      * have the basic initialization done when loading settings.
      *
-     * @throws IOException if something goes wrong
+     * @throws IOException
+     *             if something goes wrong
      */
     public synchronized void defaultInit() throws IOException {
         if (getVariable("ivy.default.ivy.user.dir") != null) {
@@ -664,8 +668,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
             return getClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
             if (silentFail) {
-                Message.info("impossible to define new type: class not found: " + className
-                        + " in " + classpathURLs + " nor Ivy classloader");
+                Message.info("impossible to define new type: class not found: " + className + " in "
+                        + classpathURLs + " nor Ivy classloader");
                 return null;
             } else {
                 throw new RuntimeException("impossible to define new type: class not found: "
@@ -767,27 +771,33 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
 
     private void checkResolverName(String resolverName) {
         if (resolverName != null && !resolversMap.containsKey(resolverName)) {
-            throw new IllegalArgumentException("no resolver found called " + resolverName
-                    + ": check your settings");
+            throw new IllegalArgumentException(
+                    "no resolver found called " + resolverName + ": check your settings");
         }
     }
 
     /**
      * regular expressions as explained in Pattern class may be used in attributes
      *
-     * @param attributes Map
-     * @param matcher PatternMatcher
-     * @param resolverName String
-     * @param branch String
-     * @param conflictManager String
-     * @param resolveMode String
+     * @param attributes
+     *            Map
+     * @param matcher
+     *            PatternMatcher
+     * @param resolverName
+     *            String
+     * @param branch
+     *            String
+     * @param conflictManager
+     *            String
+     * @param resolveMode
+     *            String
      */
     public synchronized void addModuleConfiguration(Map<String, String> attributes,
             PatternMatcher matcher, String resolverName, String branch, String conflictManager,
             String resolveMode) {
         checkResolverName(resolverName);
-        moduleSettings.defineRule(new MapMatcher(attributes, matcher), new ModuleSettings(
-                resolverName, branch, conflictManager, resolveMode));
+        moduleSettings.defineRule(new MapMatcher(attributes, matcher),
+            new ModuleSettings(resolverName, branch, conflictManager, resolveMode));
     }
 
     /**
@@ -895,7 +905,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
             return null;
         }
         if (workspaceResolver != null && !(dictatorResolver instanceof WorkspaceChainResolver)) {
-            dictatorResolver = new WorkspaceChainResolver(this, dictatorResolver, workspaceResolver);
+            dictatorResolver = new WorkspaceChainResolver(this, dictatorResolver,
+                    workspaceResolver);
         }
         return dictatorResolver;
     }
@@ -905,7 +916,10 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
         if (r != null) {
             return r;
         }
-        String resolverName = getResolverName(mrid);
+
+        String resolverName = null;
+
+        resolverName = getResolverName(mrid);
         return getResolver(resolverName);
     }
 
@@ -1082,7 +1096,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
             return;
         }
         final String name = timeoutConstraint.getName();
-        StringUtils.assertNotNullNorEmpty(name, "Name of a timeout constraint cannot be null or empty string");
+        StringUtils.assertNotNullNorEmpty(name,
+            "Name of a timeout constraint cannot be null or empty string");
         this.timeoutConstraints.put(name, timeoutConstraint);
     }
 
@@ -1118,8 +1133,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
     }
 
     public synchronized RepositoryCacheManager[] getRepositoryCacheManagers() {
-        return repositoryCacheManagers.values().toArray(
-            new RepositoryCacheManager[repositoryCacheManagers.size()]);
+        return repositoryCacheManagers.values()
+                .toArray(new RepositoryCacheManager[repositoryCacheManagers.size()]);
     }
 
     public synchronized void addConfigured(ReportOutputter outputter) {
@@ -1234,7 +1249,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
      * Filters the names list by removing all names that should be ignored as defined by the listing
      * ignore list
      *
-     * @param names ditto
+     * @param names
+     *            ditto
      */
     public synchronized void filterIgnore(Collection<String> names) {
         names.removeAll(listingIgnore);
@@ -1262,10 +1278,13 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
 
     /**
      * Returns a variable as boolean value.
-     * @param name name of the variable
-     * @param valueIfUnset value if the variable is unset
-     * @return <tt>true</tt> if the variable is <tt>'true'</tt> (ignoring case)
-     *     or the value of <i>valueIfUnset</i> if the variable is <tt>null</tt>
+     * 
+     * @param name
+     *            name of the variable
+     * @param valueIfUnset
+     *            value if the variable is unset
+     * @return <tt>true</tt> if the variable is <tt>'true'</tt> (ignoring case) or the value of
+     *         <i>valueIfUnset</i> if the variable is <tt>null</tt>
      */
     public synchronized boolean getVariableAsBoolean(String name, boolean valueIfUnset) {
         String var = getVariable(name);
@@ -1312,8 +1331,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
 
     public synchronized RepositoryCacheManager getDefaultRepositoryCacheManager() {
         if (defaultRepositoryCacheManager == null) {
-            defaultRepositoryCacheManager = new DefaultRepositoryCacheManager("default-cache",
-                    this, getDefaultRepositoryCacheBasedir());
+            defaultRepositoryCacheManager = new DefaultRepositoryCacheManager("default-cache", this,
+                    getDefaultRepositoryCacheBasedir());
             addRepositoryCacheManager(defaultRepositoryCacheManager);
         }
         return defaultRepositoryCacheManager;
@@ -1332,7 +1351,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
         return resolutionCacheManager;
     }
 
-    public synchronized void setResolutionCacheManager(ResolutionCacheManager resolutionCacheManager) {
+    public synchronized void setResolutionCacheManager(
+            ResolutionCacheManager resolutionCacheManager) {
         this.resolutionCacheManager = resolutionCacheManager;
     }
 
@@ -1471,7 +1491,8 @@ public class IvySettings implements SortEngineSettings, PublishEngineSettings, P
     /**
      * Use a different variable container.
      *
-     * @param variables IvyVariableContainer
+     * @param variables
+     *            IvyVariableContainer
      */
     public synchronized void setVariableContainer(IvyVariableContainer variables) {
         variableContainer = variables;

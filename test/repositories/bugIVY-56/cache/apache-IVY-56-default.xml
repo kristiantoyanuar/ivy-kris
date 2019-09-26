@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="apache"
+		module="IVY-56"
+		revision="1.0"
+
+		conf="default"
+		confs="default"
+		date="20190926183823"/>
+	<dependencies>
+		<module organisation="apache" name="mymodule">
+			<revision name="working@default" status="release" pubdate="20190926183823" resolver="default" artresolver="default" downloaded="false" searched="true" default="true" conf="default, *" position="0">
+				<metadata-artifact status="no" details="" size="0" time="0" location="C:\git-clones\ant-ivy\test\repositories\bugIVY-56\cache\apache\mymodule\ivy-working@default.xml" searched="true"/>
+				<caller organisation="apache" name="IVY-56" conf="default" rev="latest.integration" rev-constraint-default="latest.integration" rev-constraint-dynamic="latest.integration" callerrev="1.0"/>
+				<artifacts>
+					<artifact name="mymodule" type="jar" ext="jar" status="successful" details="" size="1" time="8" location="C:\git-clones\ant-ivy\test\repositories\bugIVY-56\cache\apache\mymodule\jars\mymodule-working@default.jar">
+						<origin-location is-local="true" location="C:\git-clones\ant-ivy\test\repositories\bugIVY-56\mymodule\mymodule.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+	</dependencies>
+</ivy-report>

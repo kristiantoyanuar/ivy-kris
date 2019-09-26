@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="ivy-report.xsl"?>
+<ivy-report version="1.0">
+	<info
+		organisation="apache"
+		module="A"
+		revision="working@IDKUT-W-C091RK9"
+
+		conf="default"
+		confs="default"
+		date="20190926183812"/>
+	<dependencies>
+		<module organisation="apache" name="foo">
+			<revision name="1.0" status="integration" pubdate="20190926183804" resolver="local" artresolver="local" downloaded="true" searched="true" default="false" conf="default, *" position="0">
+				<metadata-artifact status="successful" details="" size="1026" time="7" location="C:\git-clones\ant-ivy\test\triggers\ant-call\cache\apache\foo\ivy-1.0.xml" searched="true" original-local-location="C:\git-clones\ant-ivy\test\triggers\ant-call\cache\apache\foo\ivy-1.0.xml.original" origin-is-local="true" origin-location="C:\git-clones\ant-ivy\test\triggers\ant-call\local\foo\ivy.xml"/>
+				<caller organisation="apache" name="A" conf="default" rev="1.0" rev-constraint-default="1.0" rev-constraint-dynamic="1.0" callerrev="working@IDKUT-W-C091RK9"/>
+				<artifacts>
+					<artifact name="foo" type="zip" ext="zip" status="successful" details="" size="127" time="11" location="C:\git-clones\ant-ivy\test\triggers\ant-call\cache\apache\foo\zips\foo-1.0.zip">
+						<origin-location is-local="true" location="C:\git-clones\ant-ivy\test\triggers\ant-call\local\foo\foo.zip"/>
+					</artifact>
+					<artifact name="foo" type="jar" ext="jar" status="successful" details="" size="1" time="8" location="C:\git-clones\ant-ivy\test\triggers\ant-call\cache\apache\foo\jars\foo-1.0.jar">
+						<origin-location is-local="true" location="C:\git-clones\ant-ivy\test\triggers\ant-call\local\foo\foo.jar"/>
+					</artifact>
+				</artifacts>
+			</revision>
+		</module>
+	</dependencies>
+</ivy-report>
