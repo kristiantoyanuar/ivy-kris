@@ -56,8 +56,7 @@ public class SaveResolveReport implements IvyListener {
                             + "-result.properties");
 
                     resolverDependencies.store(new FileOutputStream(saveResultFile), null);
-                    Message.verbose(
-                        ": Resolver is now saved into " + saveResultFile.getAbsolutePath());
+                    Message.info("Resolver is now saved into " + saveResultFile.getAbsolutePath());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

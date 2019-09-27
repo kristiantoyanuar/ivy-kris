@@ -88,8 +88,10 @@ public class ChainResolver extends AbstractResolver {
                     if (child.getName().endsWith("-result.properties")) {
                         try {
                             resolverDependencies.load(new FileInputStream(child));
+                            Message.info(
+                                ">>Loaded result properties from file " + child.getAbsolutePath());
                         } catch (Exception e) {
-                            Message.verbose("Cannot load result.properties from file "
+                            Message.error(">>Cannot load result.properties from file "
                                     + child.getAbsolutePath());
                         }
                     }
@@ -130,8 +132,8 @@ public class ChainResolver extends AbstractResolver {
                     if (resolverDependencies.get(key).equals(chainResolver.getName())
                             && resolver == null) {
                         resolver = chainResolver;
-                        Message.verbose(getName() + ": Found a cached resolver ("
-                                + resolver.getName() + ") for: " + dd);
+                        Message.info(getName() + ">>Found a cached resolver (" + resolver.getName()
+                                + ") for: " + dd);
                     }
                 }
 
@@ -146,7 +148,7 @@ public class ChainResolver extends AbstractResolver {
                 }
             }
         } else {
-            Message.verbose(getName() + ": Cannot find a cached resolver for: " + dd);
+            Message.info(getName() + ">>Cannot find a cached resolver for: " + dd);
         }
 
         if (mr == null) {
