@@ -26,6 +26,7 @@ import org.apache.ivy.core.event.IvyListener;
 import org.apache.ivy.core.event.resolve.EndResolveEvent;
 import org.apache.ivy.core.resolve.IvyNode;
 import org.apache.ivy.core.settings.IvySettings;
+import org.apache.ivy.util.Message;
 
 public class SaveResolveReport implements IvyListener {
     Properties resolverDependencies = new Properties();
@@ -55,7 +56,8 @@ public class SaveResolveReport implements IvyListener {
                             + "-result.properties");
 
                     resolverDependencies.store(new FileOutputStream(saveResultFile), null);
-
+                    Message.verbose(
+                        ": Resolver is now saved into " + saveResultFile.getAbsolutePath());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

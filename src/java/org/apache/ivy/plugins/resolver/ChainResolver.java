@@ -125,20 +125,28 @@ public class ChainResolver extends AbstractResolver {
             String key = dd.getDependencyId().getOrganisation() + "#"
                     + dd.getDependencyId().getName();
             if (resolverDependencies.containsKey(key)) {
-                for (DependencyResolver resolver : chain) {
-                    if (resolverDependencies.get(key).equals(resolver.getName())) {
-                        try {
-                            ResolvedModuleRevision previouslyResolved = mr;
-                            data.setCurrentResolvedModuleRevision(previouslyResolved);
-                            mr = resolver.getDependency(dd, data);
-                        } catch (Exception ex) {
-                            Message.verbose(
-                                "problem occurred while resolving " + dd + " with " + resolver, ex);
-                            errors.add(ex);
-                        }
+                DependencyResolver resolver = null;
+                for (DependencyResolver chainResolver : chain) {
+                    if (resolverDependencies.get(key).equals(chainResolver.getName())
+                            && resolver == null) {
+                        resolver = chainResolver;
+                        Message.verbose(getName() + ": Found a cached resolver ("
+                                + resolver.getName() + ") for: " + dd);
                     }
                 }
+
+                try {
+                    ResolvedModuleRevision previouslyResolved = mr;
+                    data.setCurrentResolvedModuleRevision(previouslyResolved);
+                    mr = resolver.getDependency(dd, data);
+                } catch (Exception ex) {
+                    Message.verbose("problem occurred while resolving " + dd + " with " + resolver,
+                        ex);
+                    errors.add(ex);
+                }
             }
+        } else {
+            Message.verbose(getName() + ": Cannot find a cached resolver for: " + dd);
         }
 
         if (mr == null) {
