@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -308,10 +308,8 @@ public class IvyReport extends IvyTask {
             out = getProject().getBaseDir();
         }
 
-        InputStream xsltStream = null;
-        try {
+        try (InputStream xsltStream = new BufferedInputStream(new FileInputStream(style))) {
             // create stream to stylesheet
-            xsltStream = new BufferedInputStream(new FileInputStream(style));
             Source xsltSource = new StreamSource(xsltStream, JAXPUtils.getSystemId(style));
 
             // create transformer
@@ -343,43 +341,17 @@ public class IvyReport extends IvyTask {
                     }
                 }
 
-                InputStream inStream = null;
-                OutputStream outStream = null;
-                try {
-                    inStream = new BufferedInputStream(new FileInputStream(reportFile));
-                    outStream = new BufferedOutputStream(new FileOutputStream(outFile));
+                try (InputStream inStream = new BufferedInputStream(new FileInputStream(reportFile));
+                     OutputStream outStream = new BufferedOutputStream(new FileOutputStream(outFile))) {
                     StreamResult res = new StreamResult(outStream);
                     Source src = new StreamSource(inStream, JAXPUtils.getSystemId(style));
                     transformer.transform(src, res);
                 } catch (TransformerException e) {
                     throw new BuildException(e);
-                } finally {
-                    if (inStream != null) {
-                        try {
-                            inStream.close();
-                        } catch (IOException e) {
-                            // ignore
-                        }
-                    }
-                    if (outStream != null) {
-                        try {
-                            outStream.close();
-                        } catch (IOException e) {
-                            // ignore
-                        }
-                    }
                 }
             }
         } catch (TransformerConfigurationException e) {
             throw new BuildException(e);
-        } finally {
-            if (xsltStream != null) {
-                try {
-                    xsltStream.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
     }
 

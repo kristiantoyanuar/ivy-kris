@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -68,7 +69,7 @@ public final class XmlModuleDescriptorWriter {
             output.getParentFile().mkdirs();
         }
         try (PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(output),
-                "UTF-8"))) {
+                StandardCharsets.UTF_8))) {
             out.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
             if (licenseHeader != null) {
                 out.print(licenseHeader);

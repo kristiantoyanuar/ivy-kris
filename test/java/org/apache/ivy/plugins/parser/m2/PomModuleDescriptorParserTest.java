@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -701,7 +701,7 @@ public class PomModuleDescriptorParserTest extends AbstractModuleDescriptorParse
         assertNotNull(licenses);
         assertEquals(1, licenses.length);
         assertEquals("The Apache Software License, Version 2.0", licenses[0].getName());
-        assertEquals("http://www.apache.org/licenses/LICENSE-2.0.txt", licenses[0].getUrl());
+        assertEquals("https://www.apache.org/licenses/LICENSE-2.0.txt", licenses[0].getUrl());
     }
 
     /**
@@ -743,7 +743,7 @@ public class PomModuleDescriptorParserTest extends AbstractModuleDescriptorParse
         assertNotNull("No licenses found in the module " + childModule, licenses);
         assertEquals("Unexpected number of licenses found in the module " + childModule, 1, licenses.length);
         assertEquals("Unexpected license name", "The Apache Software License, Version 2.0", licenses[0].getName());
-        assertEquals("Unexpected license URL", "http://www.apache.org/licenses/LICENSE-2.0.txt", licenses[0].getUrl());
+        assertEquals("Unexpected license URL", "https://www.apache.org/licenses/LICENSE-2.0.txt", licenses[0].getUrl());
     }
 
     @Test
@@ -1101,14 +1101,14 @@ public class PomModuleDescriptorParserTest extends AbstractModuleDescriptorParse
         final String envName = chooseSomeEnvVar();
         final URL originalPomFile = this.getClass().getResource("test-system-properties.pom");
         assertNotNull("Pom file to test, is missing", originalPomFile);
-        final List<String> pomContent = Files.readAllLines(Paths.get(originalPomFile.toURI()), Charset.forName("UTF-8"));
+        final List<String> pomContent = Files.readAllLines(Paths.get(originalPomFile.toURI()), StandardCharsets.UTF_8);
         final List<String> replacedContent = new ArrayList<>();
         for (final String line : pomContent) {
             replacedContent.add(line.replaceAll("THIS_WILL_BE_REPLACED_IN_TEST_BY_A_ENV_VAR", envName));
         }
         // write the new pom contents into a separate file
         final Path updatedPomFile = Paths.get(workDir.getRoot().toPath().toString(), "updated-test-system-properties.pom");
-        Files.write(updatedPomFile, replacedContent, Charset.forName("UTF-8"));
+        Files.write(updatedPomFile, replacedContent, StandardCharsets.UTF_8);
 
         // now start testing - we do 2 rounds -
         // once with a system property (referenced in the pom) set and once unset

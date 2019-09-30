@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,7 +75,7 @@ import org.apache.ivy.util.MessageLoggerEngine;
 import com.abb.ivy.SaveResolveReport;
 
 /**
- * <a href="http://ant.apache.org/ivy/">Ivy</a> is a free java based dependency manager.
+ * <a href="https://ant.apache.org/ivy/">Ivy</a> is a free java based dependency manager.
  * <p>
  * This class is the main class of Ivy, which acts as a Facade to all services offered by Ivy:
  * </p>
@@ -199,7 +199,7 @@ public class Ivy {
      * @return the URL at which Ivy web site can be found
      */
     public static String getIvyHomeURL() {
-        return "http://ant.apache.org/ivy/";
+        return "https://ant.apache.org/ivy/";
     }
 
     public static Ivy newInstance() {

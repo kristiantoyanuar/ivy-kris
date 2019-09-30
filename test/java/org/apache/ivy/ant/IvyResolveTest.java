@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -246,6 +246,24 @@ public class IvyResolveTest {
 
         resolve.execute();
 
+        assertEquals("false", getIvy().getVariable("ivy.deps.changed"));
+    }
+
+
+    /**
+     * Test for issue IVY-1104,
+     * which has to do with ${ivy.deps.changed} being always set
+     * dependencies with extra attributes.
+     */
+
+    @Test
+    public void testDepsWithAttributesChanged() {
+        resolve.setFile(new File("test/java/org/apache/ivy/ant/ivy-1104.xml"));
+
+        resolve.execute();
+        assertEquals("true", getIvy().getVariable("ivy.deps.changed"));
+
+        resolve.execute();
         assertEquals("false", getIvy().getVariable("ivy.deps.changed"));
     }
 

@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,6 +52,7 @@ import org.apache.ivy.util.CacheCleaner;
 import org.apache.ivy.util.FileUtil;
 import org.apache.ivy.util.MockMessageLogger;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -4264,6 +4265,53 @@ public class ResolveTest {
     }
 
     @Test
+    public void testResolveExcludesModule2() throws Exception {
+        // root depends on a and (x 2 excluding y)
+        // a depends on x 1
+        // x 1 depends on y 1
+        // x 2 depends on y 2
+        ivy.configure(new File("test/repositories/IVY-1486/ivysettings.xml"));
+        ResolveReport report = ivy.resolve(new File(
+                        "test/repositories/IVY-1486/org/root/ivy-1.xml"),
+                getResolveOptions(new String[] {"*"}));
+        ModuleDescriptor md = report.getModuleDescriptor();
+        assertEquals(ModuleRevisionId.newInstance("org", "root", "1"),
+                md.getModuleRevisionId());
+        assertTrue(getIvyFileInCache(ModuleRevisionId.newInstance("org", "x", "2"))
+                .exists());
+        assertFalse(getIvyFileInCache(ModuleRevisionId.newInstance("org", "y", "2"))
+                .exists());
+        assertFalse(getIvyFileInCache(ModuleRevisionId.newInstance("org", "y", "1"))
+                .exists());
+    }
+
+    @Test
+    public void testResolveExcludesModule3() throws Exception {
+        // Ensure that search for unexcluded paths doesn't get confused by the exclusion
+        // of parents.
+        ivy.configure(new File("test/repositories/IVY-1486/ivysettings.xml"));
+        ResolveReport report = ivy.resolve(new File(
+                        "test/repositories/IVY-1486/org/root/ivy-2.xml"),
+                getResolveOptions(new String[] {"*"}));
+        ModuleDescriptor md = report.getModuleDescriptor();
+        assertEquals(ModuleRevisionId.newInstance("org", "root", "2"),
+                md.getModuleRevisionId());
+        assertTrue(getIvyFileInCache(ModuleRevisionId.newInstance("org", "l", "1"))
+                .exists());
+        assertFalse(getIvyFileInCache(ModuleRevisionId.newInstance("org", "l", "2"))
+                .exists());
+
+        assertTrue(getIvyFileInCache(ModuleRevisionId.newInstance("org", "h", "2"))
+                .exists());
+        assertTrue(getIvyFileInCache(ModuleRevisionId.newInstance("org", "i", "2"))
+                .exists());
+        assertTrue(getIvyFileInCache(ModuleRevisionId.newInstance("org", "j", "2"))
+                .exists());
+        assertTrue(getIvyFileInCache(ModuleRevisionId.newInstance("org", "k", "2"))
+                .exists());
+    }
+
+    @Test
     public void testResolveExcludesModuleWide() throws Exception {
         // mod2.6 depends on mod2.1 and excludes mod1.1 module wide
         // mod2.1 depends on mod1.1 which depends on mod1.2
@@ -4333,6 +4381,55 @@ public class ResolveTest {
 
         assertFalse(getArchiveFileInCache("org5", "mod5.1", "4.1", "art51A", "jar", "jar").exists());
         assertTrue(getArchiveFileInCache("org5", "mod5.1", "4.1", "art51B", "jar", "jar").exists());
+    }
+
+
+    /**
+     * Test for issues IVY-982 and IVY-1547,
+     * which have to do with resolve engine ignoring negated configurations
+     * on the left side of the maps-to operator.
+     */
+
+    @Test
+    public void testResolveWithNegation() throws Exception {
+        ConfigurationResolveReport crp;
+        ResolveReport report = ivy.resolve(new File(
+                "test/java/org/apache/ivy/core/resolve/ivy-982.xml"),
+                getResolveOptions(new String[] {"*"}));
+
+        // mod1.2: A->default
+        // mod2.1: *,!A->A
+        // mod2.2: *,!A->myconf1; *,!A,!B->myconf2
+        assertFalse(report.hasError());
+
+        ModuleRevisionId mod12 = ModuleRevisionId.newInstance("org1", "mod1.2", "2.0");
+        ModuleRevisionId mod21 = ModuleRevisionId.newInstance("org2", "mod2.1", "0.5");
+        ModuleRevisionId mod22 = ModuleRevisionId.newInstance("org2", "mod2.2", "0.9");
+
+        crp = report.getConfigurationReport("A");
+        assertTrue(crp.getDependency(mod12) != null);
+        assertTrue(Arrays.asList(crp.getDependency(mod12).getConfigurations(crp.getConfiguration()))
+            .containsAll(Collections.singletonList("default")));
+        assertEquals(crp.getDependency(mod21), null);
+        assertEquals(crp.getDependency(mod22), null);
+
+        crp = report.getConfigurationReport("B");
+        assertEquals(crp.getDependency(mod12), null);
+        assertTrue(crp.getDependency(mod21) != null);
+        assertTrue(Arrays.asList(crp.getDependency(mod21).getConfigurations(crp.getConfiguration()))
+            .containsAll(Collections.singletonList("A")));
+        assertTrue(crp.getDependency(mod22) != null);
+        assertTrue(Arrays.asList(crp.getDependency(mod22).getConfigurations(crp.getConfiguration()))
+            .containsAll(Collections.singletonList("myconf1")));
+
+        crp = report.getConfigurationReport("C");
+        assertEquals(crp.getDependency(mod12), null);
+        assertTrue(crp.getDependency(mod21) != null);
+        assertTrue(Arrays.asList(crp.getDependency(mod21).getConfigurations(crp.getConfiguration()))
+            .containsAll(Collections.singletonList("A")));
+        assertTrue(crp.getDependency(mod22) != null);
+        assertTrue(Arrays.asList(crp.getDependency(mod22).getConfigurations(crp.getConfiguration()))
+            .containsAll(Arrays.asList("myconf1", "myconf2")));
     }
 
     @Test
@@ -4945,6 +5042,29 @@ public class ResolveTest {
             // ok
             assertEquals("org.apache.dm#parent4;1.0->org.apache.dm#parent5;1.0", e.getMessage());
         }
+    }
+
+    /**
+     * Tests that when a pom {@code A1} has a {@code dependencyManagement} section with a {@code import} scoped
+     * dependency and such a dependency has the same parent {@code P}, as {@code A1}, then a {@link CircularDependencyException}
+     * isn't thrown
+     *
+     * @throws Exception
+     * @see <a href="https://issues.apache.org/jira/browse/IVY-1588">IVY-1588</a> for more details
+     */
+    @Test
+    public void testDepMgmtImportWithSameParent() throws Exception {
+        // - sibling1 has parent "org.apache.dm:parent:1.0"
+        // - sibling1 further has dependencyManagement section with a dependency on sibling2 with scope=import
+        // - sibling2 has parent "org.apache.dm:parent:1.0" (same parent as sibling1)
+        // This should *not* trigger a CircularDependencyException for the parent
+        final Ivy ivy = new Ivy();
+        ivy.configure(new File("test/repositories/parentPom/ivysettings.xml"));
+        ivy.getSettings().setDefaultResolver("parentChain");
+        final File pom = new File("test/repositories/parentPom/org/apache/dm/sibling1/1.0/sibling1-1.0.pom");
+        final ResolveReport report = ivy.resolve(pom, getResolveOptions(new String[]{"*"}));
+        Assert.assertNotNull("Resolve report is null", report);
+        Assert.assertFalse("Resolve report has errors", report.hasError());
     }
 
     @Test

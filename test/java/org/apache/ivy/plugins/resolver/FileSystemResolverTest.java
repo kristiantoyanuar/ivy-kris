@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -238,7 +238,7 @@ public class FileSystemResolverTest extends AbstractDependencyResolverTest {
         ModuleRevisionId mrid = ModuleRevisionId.newInstance("test", "allright", "1.0");
         ResolvedModuleRevision rmr = resolver.getDependency(new DefaultDependencyDescriptor(mrid,
                 false), data);
-        assertNotNull(rmr);
+        assertNotNull("Resolver could not get dependency " + mrid, rmr);
         DownloadReport dr = resolver.download(rmr.getDescriptor().getAllArtifacts(),
             getDownloadOptions());
         assertEquals(4, dr.getArtifactsReports(DownloadStatus.SUCCESSFUL).length);
@@ -257,7 +257,7 @@ public class FileSystemResolverTest extends AbstractDependencyResolverTest {
         resolver.setChecksums("md5");
         mrid = ModuleRevisionId.newInstance("test", "badartcs", "1.0");
         rmr = resolver.getDependency(new DefaultDependencyDescriptor(mrid, false), data);
-        assertNotNull(rmr);
+        assertNotNull("Could not get dependency " + mrid, rmr);
         dr = resolver.download(new Artifact[] {new DefaultArtifact(mrid, rmr.getPublicationDate(),
                 mrid.getName(), "jar", "jar")}, getDownloadOptions());
         assertEquals(1, dr.getArtifactsReports(DownloadStatus.FAILED).length);
@@ -1038,7 +1038,7 @@ public class FileSystemResolverTest extends AbstractDependencyResolverTest {
         assertNotNull("organisation not found: org1", org);
         ModuleEntry[] mods = resolver.listModules(org);
         ResolverTestHelper.assertModuleEntries(resolver, org, new String[] {"mod1.1", "mod1.2",
-                "mod1.3", "mod1.4", "mod1.5", "mod1.6"}, mods);
+                "mod1.3", "mod1.4", "mod1.5", "mod1.6", "mod1.7"}, mods);
 
         ModuleEntry mod = ResolverTestHelper.getEntry(mods, "mod1.1");
         assertNotNull("module not found: mod1.1", mod);

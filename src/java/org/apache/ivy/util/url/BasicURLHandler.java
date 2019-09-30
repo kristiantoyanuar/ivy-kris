@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -261,12 +261,13 @@ public class BasicURLHandler extends AbstractURLHandler implements TimeoutConstr
 
             // check content length only if content was not encoded
             if (srcConn.getContentEncoding() == null) {
-                int contentLength = srcConn.getContentLength();
-                if (contentLength != -1 && dest.length() != contentLength) {
+                final int contentLength = srcConn.getContentLength();
+                final long destFileSize = dest.length();
+                if (contentLength != -1 && destFileSize != contentLength) {
                     dest.delete();
                     throw new IOException(
-                            "Downloaded file size doesn't match expected Content Length for " + normalizedURL
-                                    + ". Please retry.");
+                            "Downloaded file size (" + destFileSize + ") doesn't match expected " +
+                                    "Content Length (" + contentLength + ") for " + normalizedURL + ". Please retry.");
                 }
             }
 
@@ -347,22 +348,12 @@ public class BasicURLHandler extends AbstractURLHandler implements TimeoutConstr
     private void readResponseBody(HttpURLConnection conn) {
         byte[] buffer = new byte[BUFFER_SIZE];
 
-        InputStream inStream = null;
-        try {
-            inStream = conn.getInputStream();
+        try (InputStream inStream = conn.getInputStream()) {
             while (inStream.read(buffer) > 0) {
                 // Skip content
             }
         } catch (IOException e) {
             // ignore
-        } finally {
-            if (inStream != null) {
-                try {
-                    inStream.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
 
         InputStream errStream = conn.getErrorStream();

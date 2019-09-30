@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -68,7 +68,10 @@ public class IBiblioResolver extends URLResolver {
     public static final String DEFAULT_PATTERN = "[module]/[type]s/[artifact]-[revision].[ext]";
 
     @Deprecated
-    public static final String DEFAULT_ROOT = "http://www.ibiblio.org/maven/";
+    /**
+     * @deprecated This root URL is no longer valid. Use {@link #DEFAULT_M2_ROOT} instead
+     */
+    public static final String DEFAULT_ROOT = "https://www.ibiblio.org/maven/";
 
     public static final String DEFAULT_M2_ROOT = "https://repo1.maven.org/maven2/";
 

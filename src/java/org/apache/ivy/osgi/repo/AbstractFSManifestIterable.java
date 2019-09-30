@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,9 +101,7 @@ public abstract class AbstractFSManifestIterable<T> implements Iterable<Manifest
                     }
                 } else if (bundleCandidates.hasNext()) {
                     T bundleCandidate = bundleCandidates.next();
-                    JarInputStream in = null;
-                    try {
-                        in = new JarInputStream(getInputStream(bundleCandidate));
+                    try (JarInputStream in = new JarInputStream(getInputStream(bundleCandidate))) {
                         Manifest manifest = in.getManifest();
                         if (manifest != null) {
                             next = new ManifestAndLocation(manifest,
@@ -115,14 +113,6 @@ public abstract class AbstractFSManifestIterable<T> implements Iterable<Manifest
                         Message.debug("Jar file just removed: " + bundleCandidate, e);
                     } catch (IOException e) {
                         Message.warn("Unreadable jar: " + bundleCandidate, e);
-                    } finally {
-                        if (in != null) {
-                            try {
-                                in.close();
-                            } catch (IOException e) {
-                                // Don't care
-                            }
-                        }
                     }
                 } else {
                     // no more candidate on the current directory

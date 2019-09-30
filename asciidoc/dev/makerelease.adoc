@@ -7,7 +7,7 @@
    "License"); you may not use this file except in compliance
    with the License.  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+     https://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing,
    software distributed under the License is distributed on an
@@ -164,13 +164,13 @@ Subject: [VOTE] Ivy ${version} Release
 
 I have built a release candidate for Ivy ${version}
 
-The svn tag of this release is: https://git-wip-us.apache.org/repos/asf?p=ant-ivy.git;a=tag;h=refs/tags/${version}
+The git tag of this release is: https://gitbox.apache.org/repos/asf?p=ant-ivy.git;a=tag;h=refs/tags/${version} with the sha1 ${githash-of-tag}
 
 The artifacts has been published to: https://dist.apache.org/repos/dist/dev/ant/ivy/${version} at revision ${svn-rev-of-the-check-in}
 
 The staging Maven repository is available there: https://repository.apache.org/content/repositories/orgapacheant-XXXX
 
-The Eclipse updatesite has been build there: https://dist.apache.org/repos/dist/dev/ant/ivyde/updatesite/ivy-2.0.0.beta1_20141213170938/
+The Eclipse updatesite has been build there: https://dist.apache.org/repos/dist/dev/ant/ivyde/updatesite/ivy-${version}/
 
 Do you vote for the release of these binaries?
 
@@ -215,19 +215,11 @@ The just release documentation should be added to the site. To do so, you need t
 }
 ----
 
-. generate the part of the site for the new version:
+. from the distribution just released, install the doc into the site
 +
 [source, shell]
 ----
-ant checkout-history -Dhistory.version=2.0.0-beta1
-ant generate-history -Dhistory.version=2.0.0-beta1
-----
-
-. if the 'latest-milestone' needs to be update too, run:
-+
-[source,shell]
-----
-ant checkout-history -Dhistory.version=2.0.0-beta1 -Dtarget.history.folder=latest-milestone
+ant install-doc -Dhistory.version=2.5.0-rc1 -Divy-dist.zip.url=https://dist.apache.org/repos/dist/release/ant/ivy/2.5.0-rc1/apache-ivy-2.5.0-rc1-bin.zip
 ----
 
 Now let's generate the website with the new toc:
@@ -254,6 +246,42 @@ If the Eclipse update site has already been prepared to include that new Ivy rel
 ==== 16. Announce
 
 Announce the release on the dev@ant.apache.org, ivy-user@ant.apache.org, user@ant.apache.org and announce@apache.org mailing lists. Note that announce@apache.org only accepts emails sent with an @apache.org address.
+
+Suggested template:
+
+[source]
+----
+Subject: [Announce] Release of Apache Ivy ${version}
+
+The Apache Ivy project is pleased to announce its ${version} release.
+
+Apache Ivy is a tool for managing (recording, tracking, resolving and
+reporting) project dependencies, characterized by flexibility,
+configurability, and tight integration with Apache Ant.
+
+Key features of this ${version} release are:
+
+XXXX INCLUDE THE PARAGRAPH FROM THE RELEASE NOTES XXXX
+
+XXXX SUGGESTED PARAGRAPH FOR RC
+As a release candidate version, we strongly encourage the use of this version for
+testing and validation. From now on, features are frozen until final ${version} version,
+only bug fixes will be applied before ${version}. If no outstanding bugs are reported
+with this release candidate, it will promoted to ${version} about three weeks after this
+release candidate.
+
+Issues should be reported to:
+https://issues.apache.org/jira/browse/IVY
+
+Download the release at:
+https://ant.apache.org/ivy/download.cgi
+
+More information can be found on the Ivy website:
+https://ant.apache.org/ivy/
+
+Regards,
+${me}
+----
 
 ==== 17. Update this doc
 

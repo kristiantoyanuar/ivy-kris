@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -125,8 +125,8 @@ public class XmlReportWriterTest {
         String orgAttribute = "organisation=\"org1\"";
         String modAttribute = "module=\"mod1\"";
         String revAttribute = "revision=\"1.0\"";
-        String extra1Attribute = "extra-blabla=\"abc\"";
-        String extra2Attribute = "extra-blabla2=\"123\"";
+        String extra1Attribute = "extra-0.blabla=\"abc\"";
+        String extra2Attribute = "extra-0.blabla2=\"123\"";
 
         assertTrue("XML doesn't contain organisation attribute", xml.contains(orgAttribute));
         assertTrue("XML doesn't contain module attribute", xml.contains(modAttribute));

@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -497,27 +497,11 @@ public class TestHelper {
      * after this method since the associated socket is released and some other process can now use it.
      */
     public static int getMaybeAvailablePort() {
-        ServerSocket s = null;
-        try {
-            s = new ServerSocket(0);
+        try (ServerSocket s = new ServerSocket(0)) {
             s.setReuseAddress(true);
-            int port = s.getLocalPort();
-            try {
-                s.close();
-            } catch (IOException e) {
-                // ignore
-            }
-            return port;
+            return s.getLocalPort();
         } catch (IOException e) {
             // ignore
-        } finally {
-            if (s != null) {
-                try {
-                    s.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
         }
         throw new IllegalStateException("Not TCP/IP port available");
     }

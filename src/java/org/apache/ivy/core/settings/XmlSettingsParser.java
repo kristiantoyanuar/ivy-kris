@@ -6,7 +6,7 @@
  *  (the "License"); you may not use this file except in compliance with
  *  the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -151,9 +151,7 @@ public class XmlSettingsParser extends DefaultHandler {
     @SuppressWarnings("deprecation")
     private void doParse(URL settingsUrl) throws IOException, ParseException {
         this.settings = settingsUrl;
-        InputStream stream = null;
-        try {
-            stream = URLHandlerRegistry.getDefault().openStream(settingsUrl);
+        try (InputStream stream = URLHandlerRegistry.getDefault().openStream(settingsUrl)) {
             InputSource inSrc = new InputSource(stream);
             inSrc.setSystemId(settingsUrl.toExternalForm());
             SAXParserFactory.newInstance().newSAXParser().parse(settingsUrl.toExternalForm(), this);
@@ -165,14 +163,6 @@ public class XmlSettingsParser extends DefaultHandler {
                     + ": " + e.getMessage(), 0);
             pe.initCause(e);
             throw pe;
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    // ignored
-                }
-            }
         }
     }
 
